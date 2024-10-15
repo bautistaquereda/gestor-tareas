@@ -1,4 +1,9 @@
 const prompt = require("prompt-sync")({ sigint: true });
+const CategoriesManager = require("./categoriesFS.js");
+const TaskManager = require("./tasksFS.js");
+
+const tasksManager = new TaskManager("./tasksData.json");
+const categoriesManager = new CategoriesManager("./categoriesData.json");
 
 // array tasks and categories
 
@@ -7,26 +12,22 @@ let categories = [];
 
 // get categories
 
-function getCategories() {
-  if (categories.length > 0) {
-    console.log("Categorías existentes: ");
-    categories.forEach(function (category, index) {
-      console.log(index + ": " + category);
-    });
-  }
+async function getCategories() {
+  const categories = await categoriesManager.getCategories();
+  return categories;
 }
 
 // add categories
 
-function addCategories(categoryName) {
-  categories.push(categoryName);
+async function addCategories(categoryName) {
+  const categoriesAdded = await categoriesManager.addCategory(categoryName);
   console.log("Categoría " + categoryName + " agregada con exito.");
+  return categoriesAdded;
 }
 
 // add tasks
 
-function addTask(receivedName) {
-  getCategories();
+async function addTask(receivedName) {
   if (categories.length > 0) {
     let categoryIndex = parseInt(
       prompt(
@@ -41,7 +42,7 @@ function addTask(receivedName) {
       categoryIndex == undefined ||
       categoryIndex == null
     ) {
-      tasks.push({
+      let inputTask = {
         name: receivedName,
         completed: false,
         deadLine: receivedDeadLine || null,
@@ -49,7 +50,9 @@ function addTask(receivedName) {
           categoryIndex !== undefined && categoryIndex !== null
             ? categoryIndex
             : "Otros",
-      });
+      };
+      const taskAdded = await tasksManager.addTask(inputTask);
+      return taskAdded;
     } else {
       console.log("Índice de categoría incorrecto.");
     }
@@ -57,12 +60,14 @@ function addTask(receivedName) {
     let receivedDeadLine = prompt(
       "Ingrese la fecha límite (dejar en blanco en caso de no tener): "
     );
-    tasks.push({
+    let inputTask = {
       name: receivedName,
       completed: false,
       deadLine: receivedDeadLine || null,
       category: "Otros",
-    });
+    };
+    const taskAdded = await tasksManager.addTask(inputTask);
+    return taskAdded;
   }
   console.log("Tarea agregada con exito.");
 }
@@ -136,15 +141,9 @@ function countCompletedTasksByCategory(categoryIndex) {
 
 // get pending tasks
 
-function getPendingTasks() {
-  console.log("Tareas pendientes: ");
-  tasks.forEach(function (task) {
-    if (!task.completed) {
-      console.log(
-        "- Nombre: " + task.name + " - Categoría: " + categories[task.category]
-      );
-    }
-  });
+async function getPendingTasks() {
+  const tasks = await tasksManager.getTasks();
+  return tasks;
 }
 
 // get menu
@@ -166,7 +165,7 @@ function getMenu() {
 
 // user interface
 
-function userInterface() {
+async function userInterface() {
   let option = -1;
 
   while (true) {
@@ -183,7 +182,7 @@ function userInterface() {
     switch (option) {
       case 1:
         let newTasksName = prompt("Ingrese el nombre de la tarea nueva: ");
-        addTask(newTasksName);
+        await addTask(newTasksName);
         break;
 
       case 2:
@@ -258,16 +257,12 @@ function userInterface() {
         break;
 
       case 5:
-        if (categories.length > 0) {
-          getCategories();
-          break;
-        } else {
-          console.log("No hay categorías creadas.");
-        }
+        await getCategories();
+        break;
 
       case 6:
         let newCategory = prompt("Ingrese el nombre de la nueva categoría: ");
-        addCategories(newCategory);
+        await addCategories(newCategory);
 
         break;
 
@@ -311,12 +306,8 @@ function userInterface() {
         break;
 
       case 10:
-        if (tasks.length > 0) {
-          console.log("--- LISTA DE TAREAS ---");
-          console.log(tasks);
-        } else {
-          console.log("No hay tareas creadas.");
-        }
+        console.log("--- LISTA DE TAREAS ---");
+        await getPendingTasks();
         break;
 
       default:
