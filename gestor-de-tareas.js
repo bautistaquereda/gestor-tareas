@@ -1,144 +1,155 @@
 const prompt = require("prompt-sync")({ sigint: true });
 
-// array tareas y categorias
+// array tasks and categories
 
-let tareas = [];
-let categorias = [];
+let tasks = [];
+let categories = [];
 
-// mostrar categorias
+// get categories
 
-function mostrarCategorias() {
-  console.log("Categorías existentes: ");
-  categorias.forEach(function (categoria, indice) {
-    console.log(indice + ": " + categoria);
-  });
-}
-
-// agregar categorias
-
-function agregarCategorias(nombreCategoria) {
-  categorias.push(nombreCategoria);
-  console.log("Categoría " + nombreCategoria + " agregada con exito.");
-}
-
-// agregar tareas
-
-function agregarTarea(nombreRecibido, fechaLimiteRecibida = null) {
-  mostrarCategorias();
-
-  let numeroCategoria = parseInt(
-    prompt("Ingrese el índice de la categoría para la nueva tarea: ")
-  );
-
-  if (numeroCategoria >= 0 && numeroCategoria < categorias.length) {
-    tareas.push({
-      nombre: nombreRecibido,
-      completada: false,
-      fechaLimite: fechaLimiteRecibida,
-      categoria: numeroCategoria,
+function getCategories() {
+  if (categories.length > 0) {
+    console.log("Categorías existentes: ");
+    categories.forEach(function (category, index) {
+      console.log(index + ": " + category);
     });
-    console.log("Tarea agregada con exito.");
-  } else {
-    console.log("Índice de categoría incorrecto.");
   }
 }
 
-// eliminar tareas
+// add categories
 
-function eliminarTarea(indice) {
-  if (indice >= 0 && indice < tareas.length) {
-    tareas.splice(indice, 1);
+function addCategories(categoryName) {
+  categories.push(categoryName);
+  console.log("Categoría " + categoryName + " agregada con exito.");
+}
+
+// add tasks
+
+function addTask(receivedName) {
+  getCategories();
+  if (categories.length > 0) {
+    let categoryIndex = parseInt(
+      prompt(
+        "Ingrese el índice de la categoría para la nueva tarea (dejar en blanco en caso de no tener categoría): "
+      )
+    );
+    let receivedDeadLine = prompt(
+      "Ingrese la fecha límite (dejar en blanco en caso de no tener): "
+    );
+    if (
+      (categoryIndex >= 0 && categoryIndex < categories.length) ||
+      categoryIndex == undefined ||
+      categoryIndex == null
+    ) {
+      tasks.push({
+        name: receivedName,
+        completed: false,
+        deadLine: receivedDeadLine || null,
+        category:
+          categoryIndex !== undefined && categoryIndex !== null
+            ? categoryIndex
+            : "Otros",
+      });
+    } else {
+      console.log("Índice de categoría incorrecto.");
+    }
+  } else {
+    let receivedDeadLine = prompt(
+      "Ingrese la fecha límite (dejar en blanco en caso de no tener): "
+    );
+    tasks.push({
+      name: receivedName,
+      completed: false,
+      deadLine: receivedDeadLine || null,
+      category: "Otros",
+    });
+  }
+  console.log("Tarea agregada con exito.");
+}
+
+// delete tasks
+
+function deleteTask(index) {
+  if (index >= 0 && index < tasks.length) {
+    tasks.splice(index, 1);
     console.log("Tarea eliminada.");
   } else {
     console.log("Índice de tarea incorrecto.");
   }
 }
 
-// completar tareas
+// complete tasks
 
-function tareaCompletada(indice) {
-  if (indice >= 0 && indice < tareas.length) {
-    tareas[indice].completada = true;
+function completedTask(index) {
+  if (index >= 0 && index < tasks.length) {
+    tasks[index].completed = true;
     console.log("Tarea completada.");
   } else {
     console.log("Índice de tarea incorrecto.");
   }
 }
 
-// modificar tareas
+// edit tasks
 
-function modificarTarea(
-  indice,
-  nuevoNombre,
-  nuevaFechaLimite = null,
-  nuevoIndiceCategoria
-) {
-  if (indice >= 0 && indice < tareas.length) {
-    tareas[indice].nombre =
-      nuevoNombre !== undefined ? nuevoNombre : tareas[indice].nombre;
-    tareas[indice].fechaLimite =
-      nuevaFechaLimite !== undefined
-        ? nuevaFechaLimite
-        : tareas[indice].fechaLimite;
-    tareas[indice].categoria =
-      nuevoIndiceCategoria !== undefined
-        ? nuevoIndiceCategoria
-        : tareas[indice].categoria;
+function editTask(index, newName, newDeadLine = null, newCategoryIndex) {
+  if (index >= 0 && index < tasks.length) {
+    tasks[index].name = newName !== undefined ? newName : tasks[index].name;
+    tasks[index].deadLine =
+      newDeadLine !== undefined ? newDeadLine : tasks[index].deadLine;
+    tasks[index].category =
+      newCategoryIndex !== undefined ? newCategoryIndex : tasks[index].category;
     console.log("Modificación correcta.");
   } else {
     console.log("Índice de tarea incorrecto.");
   }
 }
 
-// filtrar tareas por categorías
+// filter tasks by categories
 
-function filtrarTareasPorCategoria(numeroCategoria) {
-  let tareasFiltradas = tareas.filter(function (tarea) {
-    return tarea.categoria === numeroCategoria;
+function filterTasksByCategory(categoryIndex) {
+  let filteredTasks = tasks.filter(function (task) {
+    return task.category === categoryIndex;
   });
-  return tareasFiltradas;
+  return filteredTasks;
 }
 
-// cantidad de tareas completadas por categoria
+// completed tasks by categories
 
-function contarTareasCompletadasPorCategoria(numeroCategoria) {
-  let tareasCategoria = filtrarTareasPorCategoria(numeroCategoria);
-  let tareasCompletadas = tareasCategoria.reduce(function (contador, tarea) {
-    return tarea.completada ? contador + 1 : contador;
+function countCompletedTasksByCategory(categoryIndex) {
+  let categoryTasks = filterTasksByCategory(categoryIndex);
+  let completedTasks = categoryTasks.reduce(function (count, task) {
+    return task.completed ? count + 1 : count;
   }, 0);
 
-  let tareasEnTotal = tareasCategoria.length;
+  let totalTasks = categoryTasks.length;
 
   console.log(
     "Tareas completadas de la categoría " +
-      numeroCategoria +
+      categoryIndex +
       ": " +
-      tareasCompletadas +
+      completedTasks +
       " de " +
-      tareasEnTotal +
+      totalTasks +
       " tareas."
   );
 }
 
-// mostrar tareas pendientes
+// get pending tasks
 
-function mostrarTareasPendientes() {
+function getPendingTasks() {
   console.log("Tareas pendientes: ");
-  tareas.forEach(function (tarea) {
-    if (!tarea.completada) {
+  tasks.forEach(function (task) {
+    if (!task.completed) {
       console.log(
-        "- Nombre: " +
-          tarea.nombre +
-          " - Categoría: " +
-          categorias[tarea.categoria]
+        "- Nombre: " + task.name + " - Categoría: " + categories[task.category]
       );
     }
   });
 }
 
-// mostrar menú
+// get menu
 
-function mostrarMenu() {
+function getMenu() {
   console.log("--- MENÚ ---");
   console.log("1 - Agregar tarea.");
   console.log("2 - Eliminar tarea.");
@@ -153,49 +164,56 @@ function mostrarMenu() {
   console.log("0 - Salir.");
 }
 
-// interaccion con el usuario
+// user interface
 
-function interaccionUsuario() {
-  let opcion = -1;
+function userInterface() {
+  let option = -1;
 
-  while (opcion != 0) {
-    mostrarMenu();
-    opcion = parseInt(prompt("Ingrese la opción seleccionada: "));
-
-    switch (opcion) {
+  while (true) {
+    getMenu();
+    option = parseInt(prompt("Ingrese la opción seleccionada: "));
+    if (option == 0) {
+      console.log("Adiós.");
+      break;
+    }
+    if (option < 0 || option > 10) {
+      console.log("Opción incorrecta.");
+      continue;
+    }
+    switch (option) {
       case 1:
-        let nombreTareaNueva = prompt("Ingrese el nombre de la tarea nueva: ");
-        agregarTarea(nombreTareaNueva);
+        let newTasksName = prompt("Ingrese el nombre de la tarea nueva: ");
+        addTask(newTasksName);
         break;
 
       case 2:
-        if (tareas.length > 0) {
-          let indiceEliminar = parseInt(
+        if (tasks.length > 0) {
+          let deleteIndex = parseInt(
             prompt("Ingrese el índice de la tarea a eliminar: ")
           );
-          eliminarTarea(indiceEliminar);
+          deleteTask(deleteIndex);
         } else {
           console.log("No hay tareas creadas.");
         }
         break;
 
       case 3:
-        if (tareas.length > 0) {
-          let indiceCompletar = parseInt(
+        if (tasks.length > 0) {
+          let completeIndex = parseInt(
             prompt("Ingrese el índice de la tarea completada: ")
           );
-          tareaCompletada(indiceCompletar);
+          completedTask(completeIndex);
         } else {
           console.log("No hay tareas creadas.");
         }
         break;
 
       case 4:
-        if (tareas.length > 0) {
-          let indice = parseInt(prompt("Ingrese el índice a modificar: "));
+        if (tasks.length > 0) {
+          let index = parseInt(prompt("Ingrese el índice a modificar: "));
 
-          if (indice >= 0 && indice < tareas.length) {
-            let opcion = parseInt(
+          if (index >= 0 && index < tasks.length) {
+            let option = parseInt(
               prompt([
                 console.log("¿Qué propiedad desea modificar?"),
                 console.log("1 - Nombre."),
@@ -204,33 +222,26 @@ function interaccionUsuario() {
               ])
             );
 
-            switch (opcion) {
+            switch (option) {
               case 1:
-                let nuevoNombre = prompt(
-                  "Ingrese el nuevo nombre de su tarea: "
-                );
-                modificarTarea(indice, nuevoNombre);
+                let newName = prompt("Ingrese el nuevo nombre de su tarea: ");
+                editTask(index, newName);
                 break;
               case 2:
-                let nuevaFechaLimite = prompt(
+                let newDeadLine = prompt(
                   "Ingrese la nueva fecha límite para su tarea: "
                 );
-                modificarTarea(indice, undefined, nuevaFechaLimite);
+                editTask(index, undefined, newDeadLine);
                 break;
               case 3:
-                let nuevoIndiceCategoria = parseInt(
+                let newCategoryIndex = parseInt(
                   prompt("Ingrese el nuevo índice de categoría: ")
                 );
                 if (
-                  nuevoIndiceCategoria >= 0 &&
-                  nuevoIndiceCategoria < categorias.length
+                  newCategoryIndex >= 0 &&
+                  newCategoryIndex < categories.length
                 ) {
-                  modificarTarea(
-                    indice,
-                    undefined,
-                    undefined,
-                    nuevoIndiceCategoria
-                  );
+                  editTask(index, undefined, undefined, newCategoryIndex);
                 }
                 break;
               default:
@@ -240,51 +251,49 @@ function interaccionUsuario() {
             console.log("Índice incorrecto.");
           }
 
-          modificarTarea(indice, nombreModificar, fechaModificar);
+          editTask(index, editName, editDeadLine);
         } else {
           console.log("No hay tareas creadas.");
         }
         break;
 
       case 5:
-        if (categorias.length > 0) {
-          mostrarCategorias();
+        if (categories.length > 0) {
+          getCategories();
           break;
         } else {
           console.log("No hay categorías creadas.");
         }
 
       case 6:
-        let nuevaCategoria = prompt(
-          "Ingrese el nombre de la nueva categoría: "
-        );
-        agregarCategorias(nuevaCategoria);
+        let newCategory = prompt("Ingrese el nombre de la nueva categoría: ");
+        addCategories(newCategory);
 
         break;
 
       case 7:
-        if (tareas.lenght > 0 && categorias.length > 0) {
-          mostrarCategorias();
-          let numeroCategoria = parseInt(
+        if (tasks.length > 0 && categories.length > 0) {
+          getCategories();
+          let categoryIndex = parseInt(
             prompt("Ingrese el índice de la categoría a filtrar: ")
           );
-          let tareasCategoria = filtrarTareasPorCategoria(numeroCategoria);
+          let tasksCategory = filterTasksByCategory(categoryIndex);
 
-          console.log("Tareas de la categoria seleccionada: ");
-          console.log(tareasCategoria);
+          console.log("Tarea de la categoría seleccionada: ");
+          console.log(tasksCategory);
         } else {
-          console.log("No hay tareas o categorías creadas.");
+          console.log("No hay tarea o categorías creadas.");
         }
         break;
 
       case 8:
-        if (categorias.length > 0) {
-          mostrarCategorias();
-          let numeroCateg = parseInt(
+        if (categories.length > 0) {
+          getCategories();
+          let categIndex = parseInt(
             prompt("Ingrese el índice de la categoría a visualizar: ")
           );
-          if (numeroCateg < categorias.length) {
-            contarTareasCompletadasPorCategoria(numeroCateg);
+          if (categIndex < categories.length) {
+            countCompletedTasksByCategory(categIndex);
           } else {
             console.log("Índice de categoría incorrecta.");
           }
@@ -294,17 +303,17 @@ function interaccionUsuario() {
         break;
 
       case 9:
-        if (tarea.length > 0) {
-          mostrarTareasPendientes();
+        if (tasks.length > 0) {
+          getPendingTasks();
         } else {
           console.log("No hay tareas creadas.");
         }
         break;
 
       case 10:
-        if (tareas.length > 0) {
+        if (tasks.length > 0) {
           console.log("--- LISTA DE TAREAS ---");
-          console.log(tareas);
+          console.log(tasks);
         } else {
           console.log("No hay tareas creadas.");
         }
@@ -312,9 +321,9 @@ function interaccionUsuario() {
 
       default:
         console.log("Opción inválida.");
-        break;
+        return;
     }
   }
 }
 
-interaccionUsuario();
+userInterface();
