@@ -79,7 +79,7 @@ function modificarTarea(indice, nuevoNombre, nuevaFechaLimite = null, nuevoIndic
 
 // filtrar tareas por categorías
 
-function filtrarTareasPorCategoria(indiceCategoria){
+function filtrarTareasPorCategoria(numeroCategoria){
     let tareasFiltradas = tareas.filter(function(tarea){
         return tarea.categoria === numeroCategoria;
     });
@@ -122,7 +122,7 @@ function mostrarMenu(){
     console.log("5 - Mostrar categorías.");
     console.log("6 - Agregar categoría.");
     console.log("7 - Filtrar tareas por categoría.");
-    console.log("8 - Visualizar cantidad de tareas completadas por categoría.0");
+    console.log("8 - Visualizar cantidad de tareas completadas por categoría.");
     console.log("9 - Visualizar tareas pendientes.")
     console.log("10 - Mostrar tareas.");
     console.log("0 - Salir.");
@@ -144,24 +144,34 @@ function interaccionUsuario(){
                 break;
 
             case 2:
-                let indiceEliminar = parseInt(prompt("Ingrese el índice de la tarea a eliminar: "));
-                eliminarTarea(indiceEliminar);
+                if (tareas.length > 0){
+                    let indiceEliminar = parseInt(prompt("Ingrese el índice de la tarea a eliminar: "));
+                    eliminarTarea(indiceEliminar);
+                }else{
+                    console.log("No hay tareas creadas.")
+                }
                 break;
 
             case 3:
-                let indiceCompletar = parseInt(prompt("Ingrese el índice de la tarea completada: "));
-                tareaCompletada(indiceCompletar);
+                if (tareas.length > 0){
+                    let indiceCompletar = parseInt(prompt("Ingrese el índice de la tarea completada: "));
+                    tareaCompletada(indiceCompletar);
+                }else{
+                    console.log("No hay tareas creadas.")
+                }
                 break;
 
             case 4:
-                let indice = parseInt(prompt("Ingrese el índice a modificar: "));
+                if (tareas.length > 0){
+                    let indice = parseInt(prompt("Ingrese el índice a modificar: "));
                 
-                if(indice >= 0 && indice < tareas.length){
+                    if(indice >= 0 && indice < tareas.length){
                     
-                    let opcion = parseInt(prompt([console.log("¿Qué propiedad desea modificar?"),
+                        let opcion = parseInt(prompt([console.log("¿Qué propiedad desea modificar?"),
                         console.log("1 - Nombre."),
                         console.log("2 - Fecha límite."),
                         console.log("3 - Categoría.")]));
+                    
                     switch (opcion) {
                         case 1:
                             let nuevoNombre = prompt("Ingrese el nuevo nombre de su tarea: ");
@@ -185,6 +195,9 @@ function interaccionUsuario(){
                 }
 
                 modificarTarea(indice, nombreModificar, fechaModificar);
+            }else{
+                console.log("No hay tareas creadas.")
+            }
                 break;
 
             case 5:
@@ -194,15 +207,20 @@ function interaccionUsuario(){
             case 6:
                 let nuevaCategoria = prompt("Ingrese el nombre de la nueva categoría: ");
                 agregarCategorias(nuevaCategoria);
+              
                 break;
             
             case 7:
-                mostrarCategorias();
-                let numeroCategoria = parseInt(prompt("Ingrese el índice de la categoría a filtrar: "));
-                let tareasCategoria = filtrarTareasPorCategoria(numeroCategoria);
+                if (tareas.lenght > 0 && categoria.length > 0){
+                    mostrarCategorias();
+                    let numeroCategoria = parseInt(prompt("Ingrese el índice de la categoría a filtrar: "));
+                    let tareasCategoria = filtrarTareasPorCategoria(numeroCategoria);
 
-                console.log("Tareas de la categoria seleccionada: ");
-                console.log(tareasCategoria);
+                    console.log("Tareas de la categoria seleccionada: ");
+                    console.log(tareasCategoria);
+                } else{
+                    console.log("No hay tareas o categorías creadas.")
+                }
                 break;
 
             case 8:
