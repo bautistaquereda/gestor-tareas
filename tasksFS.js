@@ -38,6 +38,19 @@ class TaskManager {
         );
       }
     });
+  }
+  async deleteTask() {
+    let readTasks = await fs.readFile("./ taskData.json", "utf-8");
+    this.tasks = JSON.parse(readTasks);
+    console.log("Tareas: ");
+    this.tasks(function deleteTask(index) {
+      if (index >= 0 && index < tasks.length) {
+        tasks.splice(index, 1);
+        console.log("Tarea eliminada.");
+      } else {
+        console.log("Índice de tarea incorrecto.");
+      }
+    });
     return this.tasks;
   }
 }

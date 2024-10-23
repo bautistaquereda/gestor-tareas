@@ -74,13 +74,9 @@ async function addTask(receivedName) {
 
 // delete tasks
 
-function deleteTask(index) {
-  if (index >= 0 && index < tasks.length) {
-    tasks.splice(index, 1);
-    console.log("Tarea eliminada.");
-  } else {
-    console.log("Índice de tarea incorrecto.");
-  }
+async function deleteTask(index) {
+const taskDeleted = await tasksMangager.deleteTask(index)
+return taskDeleted
 }
 
 // complete tasks
@@ -190,7 +186,7 @@ async function userInterface() {
           let deleteIndex = parseInt(
             prompt("Ingrese el índice de la tarea a eliminar: ")
           );
-          deleteTask(deleteIndex);
+          await deleteTask(deleteIndex);
         } else {
           console.log("No hay tareas creadas.");
         }
