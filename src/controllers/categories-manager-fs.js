@@ -18,13 +18,13 @@ class CategoriesManager {
     }
   }
   async getCategories() {
-    let readCategories = await fs.readFile("./categoriesData.json", "utf-8");
+    let readCategories = await fs.readFile(this.path, "utf-8");
     let categoriesParsed = JSON.parse(readCategories);
     this.categories = categoriesParsed;
     console.log("Categorias: ");
     if (this.categories.length > 0) {
-      this.categories.forEach(function (categories) {
-        console.log(categories.categoryName);
+      this.categories.forEach(function (categories, index) {
+        console.log("- Índice " + index + ": " + categories.categoryName);
       });
       return this.categories;
     } else {
