@@ -1,24 +1,24 @@
 [
     {
-        "name": "sexo",
-        "deadLine": "3/3/3",
-        "category": 2,
+        "name": "Lavar los platos",
+        "deadLine": "3/10/24",
+        "category": "Otros",
         "completed": true
     },
     {
-        "name": "casa",
-        "deadLine": "213123",
-        "category": 0,
+        "name": "Pasear al perro",
+        "deadLine": "21/10/24",
+        "category": 2,
         "completed": false
     },
     {
         "name": "Correr",
-        "deadLine": "12/10/2033",
+        "deadLine": "12/10/2024",
         "category": 1,
         "completed": false
     },
     {
-        "name": "asd",
+        "name": "Ir a Necochea",
         "completed": false,
         "deadLine": null,
         "category": 2
