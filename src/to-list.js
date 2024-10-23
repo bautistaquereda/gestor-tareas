@@ -2,8 +2,8 @@ const prompt = require("prompt-sync")({ sigint: true });
 const CategoriesManager = require("./controllers/categories-manager-fs.js");
 const TaskManager = require("./controllers/tasks-manager-fs.js");
 
-const tasksManager = new TaskManager("./data/tasks-data.json");
-const categoriesManager = new CategoriesManager("./data/categories-data.json");
+const tasksManager = new TaskManager("./src/data/tasks-data.json");
+const categoriesManager = new CategoriesManager("./src/data/categories-data.json");
 
 // array tasks and categories
 
@@ -141,45 +141,54 @@ async function userInterface() {
         break;
 
       case 3:
-        await getTasks()
+        const tasks = await getTasks()
         let indexTask = parseInt(prompt("Ingrese el índice a modificar: "));
+        if (indexTask >= 0 && indexTask <= tasks.length) {
+          let option = parseInt(
+            prompt([
+              console.log("¿Qué propiedad desea modificar?"),
+              console.log("1 - Nombre."),
+              console.log("2 - Fecha límite."),
+              console.log("3 - Categoría."),
+              console.log("4 - Actualizar estado."),
+            ])
+          );
+          switch (option) {
+            case 1:
+              let newName = prompt("Ingrese el nuevo nombre de su tarea: ");
+              await updateTask(indexTask, newName, null, null, null);
+              break;
+            case 2:
+              let newDeadLine = prompt(
+                "Ingrese la nueva fecha límite para su tarea: "
+              );
+              await updateTask(indexTask, null, newDeadLine, null, null);
+              break;
+            case 3:
+              const categories = await getCategories()
+              let newCategoryIndex = parseInt(
+                prompt("Ingrese el nuevo índice de categoría: ")
+              );
+              if (newCategoryIndex < categories.length && newCategoryIndex <= 0) {
+                await updateTask(indexTask, null, null, newCategoryIndex, null);
+                break;
+              } else {
+                console.log("Indice de categoria incorrecto");
 
-        let option = parseInt(
-          prompt([
-            console.log("¿Qué propiedad desea modificar?"),
-            console.log("1 - Nombre."),
-            console.log("2 - Fecha límite."),
-            console.log("3 - Categoría."),
-            console.log("4 - Actualizar estado."),
-          ])
-        );
+              }
+            case 4:
+              await getTasks()
+              let complete = prompt("Ingresar true en caso de que esté completada o false en caso de que esté pendiente: ")
+              const completedTask = await tasksManager.toggleTask(indexTask, complete);
 
-        switch (option) {
-          case 1:
-            let newName = prompt("Ingrese el nuevo nombre de su tarea: ");
-            await updateTask(indexTask, newName, null, null, null);
-            break;
-          case 2:
-            let newDeadLine = prompt(
-              "Ingrese la nueva fecha límite para su tarea: "
-            );
-            await updateTask(indexTask, null, newDeadLine, null, null);
-            break;
-          case 3:
-            await getCategories()
-            let newCategoryIndex = parseInt(
-              prompt("Ingrese el nuevo índice de categoría: ")
-            );
-            await updateTask(indexTask, null, null, newCategoryIndex, null);
-            break;
-          case 4:
-            await getTasks()
-            let complete = prompt("Ingresar true en caso de que esté completada o false en caso de que esté pendiente: ")
-            const completedTask = await tasksManager.toggleTask(indexTask, complete);
-            console.log("Tarea modificada con éxito.");
 
-          default:
-            break;
+            default:
+              break;
+          }
+
+        } else {
+          console.log("Indice de tarea incorrecto");
+
         }
 
         break;

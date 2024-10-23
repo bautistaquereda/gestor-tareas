@@ -2,14 +2,8 @@
     {
         "name": "Lavar los platos",
         "deadLine": "3/10/24",
-        "category": "Otros",
+        "category": 0,
         "completed": true
-    },
-    {
-        "name": "Pasear al perro",
-        "deadLine": "21/10/24",
-        "category": 2,
-        "completed": false
     },
     {
         "name": "Correr",
@@ -22,5 +16,11 @@
         "completed": false,
         "deadLine": null,
         "category": 2
+    },
+    {
+        "name": "Cargar nafta",
+        "deadLine": "25/10/2024",
+        "category": 2,
+        "completed": false
     }
 ]

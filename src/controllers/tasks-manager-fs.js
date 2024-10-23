@@ -2,7 +2,7 @@ const fs = require("fs").promises;
 const prompt = require("prompt-sync")({ sigint: true });
 const CategoriesManager = require("./categories-manager-fs.js")
 
-const categories = new CategoriesManager("../data/categories-data.json")
+const categoriesManager = new CategoriesManager("./src/data/categories-data.json")
 
 class TaskManager {
   constructor(path) {
@@ -22,14 +22,10 @@ class TaskManager {
             "Ingrese el índice de la categoría para la nueva tarea (dejar en blanco en caso de no tener categoría): "
           )
         );
-        let receivedDeadLine = prompt(
-          "Ingrese la fecha límite (dejar en blanco en caso de no tener): "
-        );
-        if (
-          (categoryIndex >= 0 && categoryIndex < this.categories.length) ||
-          categoryIndex == undefined ||
-          categoryIndex == null
-        ) {
+        if ((categoryIndex >= 0 && categoryIndex < this.categories.length) || categoryIndex == undefined || categoryIndex == null) {
+          let receivedDeadLine = prompt(
+            "Ingrese la fecha límite (dejar en blanco en caso de no tener): "
+          );
           let inputTask = {
             name: receivedName,
             completed: false,
@@ -121,6 +117,7 @@ class TaskManager {
     } else {
       console.log("No hay tareas");
     }
+    return this.tasks;
   }
   async deleteTask(index) {
     try {
@@ -145,13 +142,13 @@ class TaskManager {
   async toggleTask(index, complete) {
     let readTasks = await fs.readFile(this.path, "utf-8");
     if (readTasks) {
+
       this.tasks = JSON.parse(readTasks);
-      if (complete === "true" || complete === "false") {
-        this.tasks[index].completed = complete === "true" ? true : false
-        console.log(this.tasks);
+      if (complete.toLowerCase() == "true" || complete.toLowerCase() == "false") {
+        this.tasks[index].completed = complete.toLowerCase() === "true" ? true : false
 
         await fs.writeFile(this.path, JSON.stringify(this.tasks, null, 4), "utf-8");
-        console.log(complete ? "Tarea actualizada: completada." : "Tarea actualizada: pendiente.");
+        console.log(complete.toLowerCase() ? "Tarea actualizada: completada." : "Tarea actualizada: pendiente.");
       } else {
         console.log("Error en la sintaxis.");
       }
@@ -162,10 +159,11 @@ class TaskManager {
   }
   async updateTask(index, newName, newDeadLine = null, newCategoryIndex) {
     let readTasks = await fs.readFile(this.path, "utf-8");
+
     if (readTasks) {
       this.tasks = JSON.parse(readTasks);
       if (index >= 0 && index < this.tasks.length) {
-
+        categoriesManager.getCategories()
         const task = {
           "name": newName ? newName : this.tasks[index].name,
           "deadLine": newDeadLine ? newDeadLine : this.tasks[index].deadLine,

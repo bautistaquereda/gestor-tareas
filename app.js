@@ -1,14 +1,17 @@
-require('dotenv').config()
-const express = require('express')
+//Proximamente......
 
 
-const app = express()
-const PORT = process.env.PORT || 8080
+// require('dotenv').config()
+// const express = require('express')
 
 
-app.use(express.json())
-app.use(cors())
-app.use("/")
+// const app = express()
+// const PORT = process.env.PORT || 8080
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`))
+
+// app.use(express.json())
+// app.use(cors())
+// app.use("/")
+
+// app.listen(PORT, () => console.log(`Listening on ${PORT}`))
 
